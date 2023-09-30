@@ -2,39 +2,53 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static Phonebook book = new Phonebook();
-
     public static void main(String[] args)
     {
-        System.out.println("Спасибо, что заглянули в нашу телефонную книгу!");
+        System.out.println("Спасибо, что заглянули в наш интернет-магазин ноутбуков!");
         System.out.println("Что желаете?");
-        System.out.println("Введите команду \"add\", чтобы добавить номер телефона. (Пример: add Вася Пупкин 1112233)");
-        System.out.println("Введите команду \"find\", чтобы найти все номера телефона контактного лица. (Пример: find Вася Пупкин)");
-        System.out.println("Введите команду \"print\", чтобы напечатать все номера из телефонной книги. (Пример: print). По умолчанию все пользователи отсортированы по количеству телефонов");
-        System.out.println("Введите команду \"print\", чтобы напечатать все номера из телефонной книги в обратном порядке. (Пример: print)");
-        System.out.println("Введите команду \"stop\", чтобы закрыть телефонную книгу");
+        System.out.println("Введите команду \"list\", чтобы получить весь список наших ноутбуков");
+        System.out.println("Введите команду \"filter filtername filtervalue\", чтобы установать фильтр для выборки. Типы фильтров: \"minRAM\" (целое число),\"maxRAM\"(целое число),\"minHDD\"(целое число),\"maxHDD\"(целое число),\"minPerformance\"(действительное число),\"maxPerformance\"(действительное число),\"minPrice\"(действительное число),\"maxPrice\"(действительное число)\"Brand\" (стока), \"OS\" (строка),\"Color\" (строка),\"Available\"(true или false).  Пример: filter OS Windows\n Будьте внимательны при указании названий фильтров");
+        System.out.println("Введите команду \"filter\", чтобы вывести на экран все текущие фильтры");
+        System.out.println("Введите команду \"clearfilter\", чтобы очистить все фильтры");
+        System.out.println("Веедите команду \"search\", чтобы вывести отфильтрованный список"); 
+        System.out.println("Веедите команду \"addcart name\", чтобы добавить ноутбук в корзину для покупки"); 
+        System.out.println("Введите команду \"stop\", чтобы закрыть приложение");
+
+        Store store = new Store();
+        store.generate();
 
         while(true)
         {
             Scanner in = new Scanner(System.in);
             String command = in.nextLine();
-            if (command.indexOf("add") == 0) {
-                String[] vars = command.split("\\s+",3);
-                String name = vars[1];
-                String number = vars[2];
-                book.addNewPhone(name, number);
-            } else if (command.indexOf("print")==0 && command.indexOf("reverse") == -1) {
-                book.printAllPhones();
+            if (command.indexOf("list") == 0) {
+                System.out.println("Список ноутбуков в продаже:\n");
+                store.listAll();
+            } else if (command.indexOf("filter")==0) {
+                String[] params = command.split("\\s+");
+                if(params.length >= 3)
+                {
+                    String filtername = params[1];
+                    String filtervalue = params[2];
+                    store.filter(filtername,filtervalue);
+                }
+                System.out.println("Текущие установленные фильтры:");
+                store.show_filter();
+            } else if(command.indexOf("clearfilter")==0) {
+                    store.clear_filter();
+                    store.show_filter();
+            } else if(command.indexOf("search")== 0) {
+                System.out.println("Список ноутбуков в продаже (отфильтрованный):\n");
+                store.filteredList();
+            } else if(command.indexOf("addcart")== 0) {
+                String[] params = command.split("\\s+");
+                String name = params[1];
+                Notebook nb = store.getNotebook(name);
+                nb.Select(store.cart);           
             } else if(command.indexOf("stop") != -1) {
-                System.out.println("Cao!");
+                in.close();
                 break;
-            } else if (command.indexOf("print reverse")==0) {
-                book.printAllPhones(true);
-            } else if (command.indexOf("find")==0) {
-                String[] vars = command.split("\\s+",2);
-                String name = vars[1];
-                book.printPhonesByUser(name);
-            }
+            } 
         }
     }
 }
